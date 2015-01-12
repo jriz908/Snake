@@ -1,0 +1,189 @@
+
+<html>
+
+<head>
+<title>Snake</title>
+
+
+<script type="text/javascript" src="http://d14to6y4nub5k1.cloudfront.net/local/jquery.min.js"></script>
+<script type="text/javascript" src="http://d14to6y4nub5k1.cloudfront.net/lib/codehs/library_live.js"></script>
+
+
+<style>
+canvas{
+    border: 1px solid black;
+}
+</style>
+
+</head>
+
+<body>
+<h1>Snake</h1>
+
+<div id="user-code" style="display:none;">
+
+
+var POINTS_TEXT_X = 5;
+var POINTS_TEXT_Y_BUFFER = 5;
+var POINTS_FONT = "17pt Arial";
+
+var FOOD_DELAY = 6000;
+var FOOD_RADIUS = 5;
+var FOOD_COLOR = Color.red;
+
+var SNAKE_DIM = 10;
+var SNAKE_COLOR = Color.green;
+
+var NORTH = Keyboard.UP;
+var EAST = Keyboard.RIGHT;
+var SOUTH = Keyboard.DOWN;
+var WEST = Keyboard.LEFT;
+
+var DELAY = 80;
+var direction = EAST;
+
+var x = getWidth()/2 - SNAKE_DIM/2;
+var y = getHeight()/2 - SNAKE_DIM/2;
+
+var points = 0;
+var text;
+
+
+
+function start(){
+    setUp();
+    keyDownMethod(changeDirection);
+    setTimer(draw, DELAY);
+    setTimer(drawFood, FOOD_DELAY);
+}
+
+function drawFood(){
+    var food = new Circle(FOOD_RADIUS);
+    food.setColor(FOOD_COLOR);
+    var x = Randomizer.nextInt(FOOD_RADIUS*2, getWidth() - FOOD_RADIUS*2);
+    var y = Randomizer.nextInt(FOOD_RADIUS*2, getHeight() - FOOD_RADIUS*2);
+    x = x - x%SNAKE_DIM;
+    y = y - y%SNAKE_DIM;
+    food.setPosition(x, y);
+    add(food);
+}
+
+function setUp(){
+	setBackgroundColor(Color.BLUE);
+    drawFood();
+    
+    var square = new Rectangle(SNAKE_DIM,SNAKE_DIM);
+    square.setPosition(x,y);
+    square.setColor(SNAKE_COLOR);
+    add(square);
+    
+    text = new Text(points, POINTS_FONT);
+	text.setColor(Color.WHITE);
+    text.setPosition(POINTS_TEXT_X, getHeight() - POINTS_TEXT_Y_BUFFER);
+    add(text);
+}
+
+function changeDirection(e){
+    if(e.keyCode == Keyboard.UP && direction != SOUTH){
+        direction = NORTH;
+    }else if(e.keyCode == Keyboard.DOWN && direction != NORTH){
+        direction = SOUTH;
+    }else if(e.keyCode == Keyboard.RIGHT && direction != WEST){
+        direction = EAST;
+    }else if(e.keyCode == Keyboard.LEFT && direction != EAST){
+        direction = WEST;
+    }
+}
+
+function draw(){
+    
+    
+    
+    if(direction == EAST){
+        x += SNAKE_DIM;
+    }else if(direction == WEST){
+        x -= SNAKE_DIM;
+    
+    }else if(direction == NORTH){
+        y -= SNAKE_DIM;
+    
+    }else{
+        y += SNAKE_DIM;
+    }
+    
+    checkWalls();
+    
+    var elem = getElementAt(x + SNAKE_DIM/2, y + SNAKE_DIM/2);
+    
+   
+    var square = new Rectangle(SNAKE_DIM,SNAKE_DIM);
+    square.setPosition(x,y);
+    square.setColor(SNAKE_COLOR);
+    add(square);
+    
+    
+   
+    
+    if(elem != null && elem.getType() != "Text"){
+        if(elem.getColor() == Color.GREEN){
+            
+            
+            var txt = new Text("You Lose", "30pt Arial");
+            txt.setPosition(getWidth()/2-80, getHeight()/2);
+            add(txt);
+        
+            stopTimer(draw);
+            stopTimer(drawFood);
+            return;
+        }else{
+            
+            
+            remove(elem);
+            points += 100;
+        }    
+    }
+    
+    
+    points++;
+    text.setText(points);
+}
+
+function checkWalls(){
+    if(x <= 0){
+        x = getWidth() - Math.abs(x);
+    }
+    else if(x >= getWidth()){
+        x =-(x - getWidth());
+    }
+    if(y <= 0){
+        y = getHeight() - Math.abs(y);
+    }
+    else if(y >= getHeight()){
+        y = y - getHeight();
+    }
+    
+    
+}
+
+
+
+
+
+</div>
+
+<canvas 
+width="700"
+height="900"
+class="codehs-editor-canvas"></canvas>
+
+<script>
+var g = new CodeHSGraphics({
+    canvas: $('.codehs-editor-canvas')
+});
+// run test # here.
+g.runCode($("#user-code").text());
+
+</script>
+
+</body>
+</html>
